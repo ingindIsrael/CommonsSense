@@ -26,4 +26,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.pepper-info.json
+.pepper-info.jsoncommie*
+commie*
