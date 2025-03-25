@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pepper Value Backup and Restore Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #3498db;
+        }
+        code {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            padding: 2px 5px;
+            font-size: 0.9em;
+        }
+        pre {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .warning {
+            background-color: #fcf8e3;
+            border-left: 4px solid #f0ad4e;
+            padding: 10px;
+            margin: 20px 0;
+        }
+        .important {
+            background-color: #f2dede;
+            border-left: 4px solid #d9534f;
+            padding: 10px;
+            margin: 20px 0;
+        }
+        @media print {
+            body {
+                font-size: 12pt;
+            }
+            pre, code {
+                font-size: 10pt;
+            }
+            .no-print {
+                display: none;
+            }
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            pre, blockquote {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <p><strong>Instructions:</strong> To save as PDF, use your browser's print function (Ctrl+P or Cmd+P) and select "Save as PDF" as the destination.</p>
+        <hr>
+    </div>
+
+    <h1>Pepper Value Backup and Restore Documentation</h1>
+
+    <h2>Overview</h2>
+    <p>This document outlines the procedures for backing up and restoring cryptographic pepper values used in our password hashing system. Proper management of these values is critical for maintaining system security and ensuring user authentication continues to function correctly.</p>
+
+    <h2>Importance of Pepper Backups</h2>
+    <p>Pepper values are cryptographic secrets used to enhance password security. If these values are lost:</p>
+    <ul>
+        <li>Users will be unable to authenticate</li>
+        <li>Password hashes cannot be verified</li>
+        <li>Recovery may be impossible without a backup</li>
+    </ul>
+
+    <h2>Backup Procedures</h2>
+
+    <h3>Automatic Backups</h3>
+    <p>Our system automatically creates backups in the following scenarios:</p>
+    <ol>
+        <li>Before and after pepper rotation (every 90 days)</li>
+        <li>When manually triggered via the admin API</li>
+    </ol>
+
+    <h3>Manual Backup Creation</h3>
+    <p>To manually create a backup:</p>
+
+    <p><strong>Using the Admin API:</strong></p>
+    <pre><code>curl -X POST https://your-domain.com/api/admin/pepper-backup \
+  -H "Authorization: Bearer YOUR_ADMIN_API_KEY" \
+  -H "Content-Type: application/json"</code></pre>
+
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "backupId": "a1b2c3d4e5f6"
+}</code></pre>
+
+    <p><strong>Record the backup ID</strong> in your secure documentation system.</p>
+
+    <h3>Backup Storage Locations</h3>
+    <p>Backups are stored in multiple locations for redundancy:</p>
+
+    <p><strong>Local Storage:</strong></p>
+    <ul>
+        <li>Path: <code>./secure-backups/pepper-backup-{backupId}.json</code></li>
+        <li>Encrypted using a separate encryption key</li>
+        <li>Limited to 5 most recent backups</li>
+    </ul>
+
+    <p><strong>AWS S3:</strong></p>
+    <ul>
+        <li>Bucket: Configured via <code>AWS_BACKUP_BUCKET</code> environment variable</li>
+        <li>Path: <code>pepper-backups/pepper-backup-{backupId}.json</code></li>
+        <li>Server-side encrypted</li>
+        <li>Limited to 5 most recent backups</li>
+    </ul>
+
+    <p><strong>Offline Backup (Recommended):</strong></p>
+    <ul>
+        <li>For critical deployments, maintain an offline backup</li>
+        <li>Store in a secure physical location (e.g., company safe)</li>
+        <li>Update after each pepper rotation</li>
+    </ul>
+
+    <h2>Restore Procedures</h2>
+
+    <h3>When to Restore</h3>
+    <p>Restore from backup in these scenarios:</p>
+    <ul>
+        <li>After system migration</li>
+        <li>After server failure</li>
+        <li>If pepper values are accidentally changed or deleted</li>
+        <li>During disaster recovery</li>
+    </ul>
+
+    <h3>Restore Process</h3>
+
+    <h4>Using the Admin API:</h4>
+    <p><strong>To restore a specific backup:</strong></p>
+    <pre><code>curl -X PUT https://your-domain.com/api/admin/pepper-backup \
+  -H "Authorization: Bearer YOUR_ADMIN_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"backupId": "a1b2c3d4e5f6"}'</code></pre>
+
+    <p><strong>To restore the most recent backup (omit backupId):</strong></p>
+    <pre><code>curl -X PUT https://your-domain.com/api/admin/pepper-backup \
+  -H "Authorization: Bearer YOUR_ADMIN_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{}'</code></pre>
+
+    <h4>Manual Restore (Emergency Procedure):</h4>
+    <p>If the API is unavailable:</p>
+    <ol>
+        <li>Locate the backup file in <code>./secure-backups/</code> or retrieve from S3</li>
+        <li>Use the <code>restorePepperFromBackup</code> function in the admin console:
+            <pre><code>const { restorePepperFromBackup } = require('./utils/pepper-backup');
+await restorePepperFromBackup('a1b2c3d4e5f6'); // With specific ID
+// OR
+await restorePepperFromBackup(); // Most recent backup</code></pre>
+        </li>
+        <li>Restart the application to apply changes</li>
+    </ol>
+
+    <h2>Verification Procedures</h2>
+
+    <h3>Verifying Backups</h3>
+    <p>Periodically verify backups can be restored:</p>
+    <ol>
+        <li>In a test environment, attempt to restore from a recent backup</li>
+        <li>Verify authentication works with the restored values</li>
+        <li>Document the verification in your security log</li>
+    </ol>
+
+    <h3>Backup Monitoring</h3>
+    <p>Monitor backup health:</p>
+    <ul>
+        <li>Check that backups are being created on schedule</li>
+        <li>Verify backup files are not corrupted</li>
+        <li>Ensure backup encryption keys are secure</li>
+    </ul>
+
+    <h2>Security Considerations</h2>
+
+    <h3>Access Control</h3>
+    <ul>
+        <li>Limit access to backup files and restoration procedures</li>
+        <li>Use strong, unique API keys for the admin endpoints</li>
+        <li>Rotate admin API keys regularly</li>
+    </ul>
+
+    <h3>Encryption Keys</h3>
+    <ul>
+        <li>Store the <code>BACKUP_ENCRYPTION_KEY</code> separately from the backups</li>
+        <li>Consider using a hardware security module (HSM) for key storage</li>
+        <li>Have a secure process for key recovery</li>
+    </ul>
+
+    <h2>Disaster Recovery</h2>
+    <p>In case of complete system failure:</p>
+    <ol>
+        <li>Restore the application code</li>
+        <li>Restore environment variables</li>
+        <li>Restore pepper values from backup</li>
+        <li>Verify authentication functionality</li>
+        <li>Monitor for any anomalies</li>
+    </ol>
+
+    <h2>Troubleshooting</h2>
+
+    <h3>Common Issues</h3>
+    <ol>
+        <li><strong>"No pepper backups found"</strong>
+            <ul>
+                <li>Verify backup directory exists</li>
+                <li>Check S3 bucket permissions</li>
+                <li>Ensure backup creation is properly configured</li>
+            </ul>
+        </li>
+        <li><strong>"Failed to decrypt backup"</strong>
+            <ul>
+                <li>Verify correct <code>BACKUP_ENCRYPTION_KEY</code> is being used</li>
+                <li>Check if the backup file is corrupted</li>
+            </ul>
+        </li>
+        <li><strong>"Authentication failures after restore"</strong>
+            <ul>
+                <li>Verify the correct backup was restored</li>
+                <li>Check if application was restarted after restore</li>
+                <li>Ensure environment variables are properly loaded</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>Contact Information</h2>
+    <p>For emergency assistance with pepper backup/restore:</p>
+    <ul>
+        <li>Primary: Security Team (security@example.com)</li>
+        <li>Secondary: DevOps Lead (devops@example.com)</li>
+        <li>Emergency: CTO (cto@example.com)</li>
+    </ul>
+
+    <div class="important">
+        <p><strong>IMPORTANT</strong>: This document contains sensitive security information. Store securely and share only with authorized personnel.</p>
+    </div>
+
+    <div class="no-print">
+        <hr>
+        <p><em>Document generated on: <script>document.write(new Date().toLocaleDateString())</script></em></p>
+    </div>
+</body>
+</html> 
