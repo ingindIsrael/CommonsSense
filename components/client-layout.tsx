@@ -1,4 +1,6 @@
 "use client"
+// Handles conditional TopBar rendering based on route
+// Shows TopBar except in leader-dashboard routes
 
 import { usePathname } from 'next/navigation'
 import { TopBar } from "@/components/top-bar"
