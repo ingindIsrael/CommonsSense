@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -125,18 +125,17 @@ export function GlassmorphicLogin() {
       if (isSignUp) {
         console.log("Attempting to sign up with Supabase...")
         
-        // Generate a salt for additional security
-        // Note: Supabase already securely hashes the password, but we store an additional
-        // salt in user metadata for potential future use or additional verification
-        const salt = crypto.randomBytes(16).toString('base64')
+        const salt = btoa(
+          String.fromCharCode(...new Uint8Array(window.crypto.getRandomValues(new Uint8Array(16))))
+        )
         
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
-          password, // Send the plain password - Supabase will hash it securely
+          password,
           options: {
             data: {
               username,
-              salt, // Store the salt in user metadata
+              salt,
             },
           },
         })
@@ -145,29 +144,40 @@ export function GlassmorphicLogin() {
 
         if (signUpError) throw signUpError
 
-        // Show success message
-        setToast({
-          visible: true,
-          message: "Check your email for the confirmation link! You'll need to verify your email before logging in."
-        })
-        formRef.current?.reset()
-        setIsSignUp(false) // Switch back to login view
+        // Redirect to confirmation page instead of showing toast
+        router.push("/confirmation")
       } else {
         console.log("Attempting to log in with Supabase...")
         
-        // For login, we use Supabase's built-in auth
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
 
-        console.log("Sign in response:", { 
-          user: data?.user ? "User data received" : "No user data", 
-          session: data?.session ? "Session received" : "No session",
-          error: signInError 
-        })
-
-        if (signInError) throw signInError
+        if (signInError) {
+          if (signInError.message === "Email not confirmed") {
+            // Redirect to a special page for unconfirmed emails
+            setError("Please check your email and confirm your account before logging in.")
+            
+            // Option to resend confirmation email
+            const { error: resendError } = await supabase.auth.resend({
+              type: 'signup',
+              email,
+            })
+            
+            if (!resendError) {
+              setToast({
+                visible: true,
+                message: "We've sent another confirmation email. Please check your inbox."
+              })
+            }
+            
+            // Redirect to confirmation page
+            router.push("/confirmation")
+            return
+          }
+          throw signInError
+        }
 
         // Show success message
         setToast({

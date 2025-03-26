@@ -10,7 +10,14 @@ function shouldShowTopBar(pathname: string) {
   const authenticatedRoutes = [
     '/leader-dashboard',
     '/dashboard',
-    '/menu'
+    '/menu',
+    '/calendar',
+    '/financial',
+    '/resources',
+    '/campaigns',
+    '/shop',
+    '/social',
+    '/polied'
   ]
   
   return !authenticatedRoutes.some(route => pathname.startsWith(route))

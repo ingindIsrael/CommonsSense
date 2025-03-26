@@ -5,15 +5,27 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
 import { 
   Home, 
-  Settings, 
   FileText, 
   Users, 
   Calendar, 
-  Mail, 
-  Shield, 
   Database,
-  LogOut
+  LogOut,
+  ShoppingBag,
+  Flag,
+  Settings,
+  HelpCircle,
+  ChevronDown
 } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ReactNode } from "react"
 
 interface AppTile {
   id: string
@@ -31,7 +43,20 @@ interface User {
   }
 }
 
-export function AppDashboard() {
+interface DashboardTile {
+  title: string
+  description: string
+  icon: ReactNode
+  href: string
+  color: string
+  requiresSecurityCheck?: boolean
+}
+
+interface AppDashboardProps {
+  tiles: DashboardTile[]
+}
+
+export function AppDashboard({ tiles }: AppDashboardProps) {
   const [supabase, setSupabase] = useState<any>(null)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -55,68 +80,68 @@ export function AppDashboard() {
   // Sample app tiles - you can customize these or load from your database
   const appTiles: AppTile[] = [
     {
-      id: "home",
-      name: "Home",
-      description: "Return to the main dashboard",
+      id: "leader-dashboard",
+      name: "Leader Dashboard",
+      description: "Access your leadership overview and metrics",
       icon: <Home size={24} />,
-      url: "/dashboard",
+      url: "/leader-dashboard",
       color: "from-blue-500 to-blue-600"
-    },
-    {
-      id: "documents",
-      name: "Documents",
-      description: "Access and manage your documents",
-      icon: <FileText size={24} />,
-      url: "/documents",
-      color: "from-green-500 to-green-600"
-    },
-    {
-      id: "users",
-      name: "Users",
-      description: "Manage user accounts and permissions",
-      icon: <Users size={24} />,
-      url: "/users",
-      color: "from-purple-500 to-purple-600"
     },
     {
       id: "calendar",
       name: "Calendar",
-      description: "View and manage your schedule",
+      description: "Manage events and schedules",
       icon: <Calendar size={24} />,
       url: "/calendar",
       color: "from-yellow-500 to-yellow-600"
     },
     {
-      id: "messages",
-      name: "Messages",
-      description: "View and send messages",
-      icon: <Mail size={24} />,
-      url: "/messages",
-      color: "from-red-500 to-red-600"
+      id: "polied",
+      name: "PoliEd",
+      description: "Political education resources and training",
+      icon: <FileText size={24} />,
+      url: "/polied",
+      color: "from-green-500 to-green-600"
     },
     {
-      id: "security",
-      name: "Security",
-      description: "Manage security settings",
-      icon: <Shield size={24} />,
-      url: "/security",
-      color: "from-indigo-500 to-indigo-600"
+      id: "social",
+      name: "Social",
+      description: "Connect with your community",
+      icon: <Users size={24} />,
+      url: "/social",
+      color: "from-purple-500 to-purple-600"
     },
     {
-      id: "database",
-      name: "Database",
-      description: "Access database management tools",
+      id: "financial",
+      name: "Financial",
+      description: "Manage budgets and transactions",
       icon: <Database size={24} />,
-      url: "/database",
+      url: "/financial",
       color: "from-pink-500 to-pink-600"
     },
     {
-      id: "settings",
-      name: "Settings",
-      description: "Configure application settings",
-      icon: <Settings size={24} />,
-      url: "/settings",
-      color: "from-gray-500 to-gray-600"
+      id: "resources",
+      name: "Resources",
+      description: "Access shared resources and documents",
+      icon: <FileText size={24} />,
+      url: "/resources",
+      color: "from-indigo-500 to-indigo-600"
+    },
+    {
+      id: "swag-shop",
+      name: "Swag Shop",
+      description: "Browse and order merchandise",
+      icon: <ShoppingBag size={24} />,
+      url: "/swag-shop",
+      color: "from-red-500 to-red-600"
+    },
+    {
+      id: "campaigns",
+      name: "Campaigns",
+      description: "Manage your active campaigns",
+      icon: <Flag size={24} />,
+      url: "/campaigns",
+      color: "from-orange-500 to-orange-600"
     }
   ]
 
@@ -181,8 +206,13 @@ export function AppDashboard() {
     router.push("/logout")
   }
   
-  const handleTileClick = (url: string) => {
-    router.push(url)
+  const handleTileClick = (e: React.MouseEvent, href: string, requiresSecurityCheck?: boolean) => {
+    e.preventDefault()
+    if (requiresSecurityCheck) {
+      router.push('/leader-dashboard/security-check')
+    } else {
+      router.push(href)
+    }
   }
   
   if (loading) {
@@ -198,22 +228,52 @@ export function AppDashboard() {
       {/* Header */}
       <header className="bg-black/30 backdrop-blur-xl border-b border-white/10 p-4 min-h-[80px] flex items-center relative z-50">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">App Dashboard</h1>
+          <Link href="/menu" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="relative w-14 h-12 overflow-hidden rounded-full">
+              <Image
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-IEXlfwRwFpn2Ej78zjbJNB6Y0QXL9e.png"
+                alt="CommonsSense Logo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            <span className="text-white text-xl font-bold tracking-tight">CommonsSense</span>
+          </Link>
           
           <div className="flex items-center gap-4">
-            <div className="text-right">
+            <div className="text-right mr-2">
               <p className="font-medium">{user?.email}</p>
               <p className="text-sm text-gray-400">
                 {supabaseAvailable ? "Logged in" : "Demo Mode"}
               </p>
             </div>
-            <button 
-              onClick={handleSignOut}
-              className="flex items-center gap-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2.5 rounded-lg transition-colors"
-            >
-              <LogOut size={16} />
-              <span>Sign Out</span>
-            </button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 bg-black/40 hover:bg-black/60 px-4 py-2.5 rounded-lg transition-colors">
+                <Settings size={16} />
+                <span>Menu</span>
+                <ChevronDown size={16} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-black/80 backdrop-blur-xl border-white/10">
+                <DropdownMenuItem className="text-white hover:bg-white/10 cursor-pointer"
+                  onClick={() => router.push("/settings")}>
+                  <Settings size={16} className="mr-2" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-white hover:bg-white/10 cursor-pointer"
+                  onClick={() => window.open('/support', '_blank')}>
+                  <HelpCircle size={16} className="mr-2" />
+                  Tech Support
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem className="text-red-400 hover:bg-red-500/10 cursor-pointer"
+                  onClick={handleSignOut}>
+                  <LogOut size={16} className="mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
@@ -223,21 +283,37 @@ export function AppDashboard() {
         <h2 className="text-3xl font-bold mb-8">Your Applications</h2>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {appTiles.map((tile) => (
-            <div
-              key={tile.id}
-              onClick={() => handleTileClick(tile.url)}
-              className={`bg-gradient-to-br ${tile.color} bg-opacity-20 backdrop-blur-lg 
-                         border border-white/10 rounded-xl p-6 cursor-pointer
-                         hover:scale-105 transition-transform duration-200
-                         flex flex-col items-center text-center`}
+          {tiles.map((tile, index) => (
+            <Link 
+              key={index}
+              href={tile.href}
+              onClick={(e) => handleTileClick(e, tile.href, tile.requiresSecurityCheck)}
+              className="group relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 cursor-pointer
+                        hover:bg-white/20 hover:border-white/30 hover:scale-105 
+                        transition-all duration-200
+                        flex flex-col items-center text-center overflow-hidden"
             >
-              <div className="bg-white/10 p-4 rounded-full mb-4">
-                {tile.icon}
+              {/* Red accent strip - keeping this red for brand consistency */}
+              <div className="absolute bottom-0 left-0 w-1/3 h-1 bg-gradient-to-r from-red-600 to-transparent" />
+              
+              {/* Icon container with white glow on hover */}
+              <div className="relative">
+                <div className="bg-white/10 p-4 rounded-full mb-4 
+                              group-hover:bg-white/80 group-hover:shadow-[0_0_25px_rgba(255,255,255,0.5)] 
+                              transition-all duration-200">
+                  <div className="text-white group-hover:text-black transition-colors">
+                    {tile.icon}
+                  </div>
+                </div>
+                {/* White glow overlay */}
+                <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 
+                              transition-opacity duration-200
+                              bg-gradient-to-r from-white/10 via-white/20 to-white/10 
+                              blur-2xl -z-10" />
               </div>
-              <h3 className="text-xl font-bold mb-2">{tile.name}</h3>
-              <p className="text-sm text-gray-300">{tile.description}</p>
-            </div>
+              <h3 className="text-xl font-bold mb-2 text-white group-hover:text-white">{tile.title}</h3>
+              <p className="text-gray-300 group-hover:text-white/90">{tile.description}</p>
+            </Link>
           ))}
         </div>
       </main>

@@ -445,6 +445,35 @@
   "resolved" "https://registry.npmjs.org/@floating-ui/utils/-/utils-0.2.9.tgz"
   "version" "0.2.9"
 
+"@fullcalendar/core@^6.1.15":
+  "integrity" "sha512-BuX7o6ALpLb84cMw1FCB9/cSgF4JbVO894cjJZ6kP74jzbUZNjtwffwRdA+Id8rrLjT30d/7TrkW90k4zbXB5Q=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/core/-/core-6.1.15.tgz"
+  "version" "6.1.15"
+  dependencies:
+    "preact" "~10.12.1"
+
+"@fullcalendar/daygrid@^6.1.15", "@fullcalendar/daygrid@~6.1.15":
+  "integrity" "sha512-j8tL0HhfiVsdtOCLfzK2J0RtSkiad3BYYemwQKq512cx6btz6ZZ2RNc/hVnIxluuWFyvx5sXZwoeTJsFSFTEFA=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/daygrid/-/daygrid-6.1.15.tgz"
+  "version" "6.1.15"
+
+"@fullcalendar/interaction@^6.1.15":
+  "integrity" "sha512-DOTSkofizM7QItjgu7W68TvKKvN9PSEEvDJceyMbQDvlXHa7pm/WAVtAc6xSDZ9xmB1QramYoWGLHkCYbTW1rQ=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/interaction/-/interaction-6.1.15.tgz"
+  "version" "6.1.15"
+
+"@fullcalendar/react@^6.1.15":
+  "integrity" "sha512-L0b9hybS2J4e7lq6G2CD4nqriyLEqOH1tE8iI6JQjAMTVh5JicOo5Mqw+fhU5bJ7hLfMw2K3fksxX3Ul1ssw5w=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/react/-/react-6.1.15.tgz"
+  "version" "6.1.15"
+
+"@fullcalendar/timegrid@^6.1.15":
+  "integrity" "sha512-61ORr3A148RtxQ2FNG7JKvacyA/TEVZ7z6I+3E9Oeu3dqTf6M928bFcpehRTIK6zIA6Yifs7BeWHgOE9dFnpbw=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/timegrid/-/timegrid-6.1.15.tgz"
+  "version" "6.1.15"
+  dependencies:
+    "@fullcalendar/daygrid" "~6.1.15"
+
 "@hookform/resolvers@^3.9.1":
   "integrity" "sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag=="
   "resolved" "https://registry.npmjs.org/@hookform/resolvers/-/resolvers-3.10.0.tgz"
@@ -2464,6 +2493,11 @@
     "nanoid" "^3.3.6"
     "picocolors" "^1.0.0"
     "source-map-js" "^1.0.2"
+
+"preact@~10.12.1":
+  "integrity" "sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg=="
+  "resolved" "https://registry.npmjs.org/preact/-/preact-10.12.1.tgz"
+  "version" "10.12.1"
 
 "prop-types@^15.6.2", "prop-types@^15.7.2", "prop-types@^15.8.1":
   "integrity" "sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg=="

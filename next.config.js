@@ -2,13 +2,22 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  transpilePackages: [
+    '@fullcalendar/core',
+    '@fullcalendar/react',
+    '@fullcalendar/daygrid',
+    '@fullcalendar/timegrid',
+    '@fullcalendar/interaction'
+  ],
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '*.public.blob.vercel-storage.com',
-        port: '',
-        pathname: '/**',
+        hostname: 'dummyimage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'hebbkx1anhila5yf.public.blob.vercel-storage.com',
       },
     ],
   },
