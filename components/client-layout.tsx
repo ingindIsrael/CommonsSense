@@ -6,8 +6,14 @@ import { usePathname } from 'next/navigation'
 import { TopBar } from "@/components/top-bar"
 
 function shouldShowTopBar(pathname: string) {
-  // Don't show TopBar in leader dashboard routes
-  return !pathname.startsWith('/leader-dashboard')
+  // Don't show TopBar in authenticated routes
+  const authenticatedRoutes = [
+    '/leader-dashboard',
+    '/dashboard',
+    '/menu'
+  ]
+  
+  return !authenticatedRoutes.some(route => pathname.startsWith(route))
 }
 
 export default function ClientLayout({
