@@ -177,6 +177,34 @@ const readingPropositions = [
   }
 ]
 
+// Mock movie propositions data
+const moviePropositions = [
+  {
+    id: 1,
+    title: "Matewan",
+    director: "John Sayles",
+    year: "1987",
+    proposedBy: "Tom Martinez",
+    date: "2024-03-24",
+    category: "Labor History",
+    description: "Drama about labor rights and coal mining unions in 1920s West Virginia.",
+    supporters: 7,
+    status: "Under Review"
+  },
+  {
+    id: 2,
+    title: "Land and Freedom",
+    director: "Ken Loach",
+    year: "1995",
+    proposedBy: "Lisa Chen",
+    date: "2024-03-22",
+    category: "Historical Drama",
+    description: "Story about the Spanish Civil War and revolutionary politics.",
+    supporters: 4,
+    status: "Under Review"
+  }
+]
+
 export default function PoliEdPage() {
   const [activeSection, setActiveSection] = useState("current")
   const router = useRouter()
@@ -252,6 +280,16 @@ export default function PoliEdPage() {
             >
               <PlusCircle size={20} />
               <span>Reading Propositions</span>
+            </button>
+            
+            <button
+              onClick={() => setActiveSection("moviePropositions")}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                activeSection === "moviePropositions" ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <Film size={20} />
+              <span>Movie Propositions</span>
             </button>
           </nav>
         </div>
@@ -463,6 +501,45 @@ export default function PoliEdPage() {
                       <div>
                         <h3 className="text-xl font-bold">{prop.title}</h3>
                         <p className="text-gray-400">by {prop.author}</p>
+                        <p className="text-sm text-gray-400 mt-1">Proposed by {prop.proposedBy} on {prop.date}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="inline-block px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-sm">
+                          {prop.status}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mt-4">{prop.description}</p>
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-sm text-gray-400">{prop.category}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-400">{prop.supporters} supporters</span>
+                        <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                          Support
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeSection === "moviePropositions" && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Movie Propositions</h2>
+                <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                  Submit New Movie
+                </button>
+              </div>
+              <div className="grid gap-6">
+                {moviePropositions.map((prop) => (
+                  <div key={prop.id} className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-xl font-bold">{prop.title}</h3>
+                        <p className="text-gray-400">Dir. {prop.director} • {prop.year}</p>
                         <p className="text-sm text-gray-400 mt-1">Proposed by {prop.proposedBy} on {prop.date}</p>
                       </div>
                       <div className="text-right">
