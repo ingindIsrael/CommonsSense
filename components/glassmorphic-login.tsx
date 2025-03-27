@@ -54,24 +54,24 @@ export function GlassmorphicLogin() {
   useEffect(() => {
     const checkConnection = async () => {
       if (!supabaseAvailable) {
-        setConnectionStatus(`Supabase not available: ${supabaseError || "Unknown error"}`)
+        setConnectionStatus(`Database not available: ${supabaseError || "Unknown error"}`)
         return
       }
       
       try {
-        // Try to make a simple request to Supabase
-        const { error } = await supabase.from('secure_pepper_storage').select('count', { count: 'exact', head: true })
+        // Simple health check
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/health`)
         
-        if (error) {
-          setConnectionStatus(`Connection error: ${error.message}`)
-          console.error("Supabase connection test failed:", error)
+        if (response.ok) {
+          setConnectionStatus("Connected to database")
+          console.log("Database connection test successful")
         } else {
-          setConnectionStatus("Connected to Supabase")
-          console.log("Supabase connection test successful")
+          setConnectionStatus("Database connection error")
+          console.log("Database connection test failed")
         }
-      } catch (err: any) {
-        setConnectionStatus(`Connection error: ${err.message}`)
-        console.error("Supabase connection test exception:", err)
+      } catch (err) {
+        setConnectionStatus("Database connection error")
+        console.log("Database connection test failed")
       }
     }
     
@@ -268,14 +268,26 @@ export function GlassmorphicLogin() {
               </div>
             )}
 
-            {/* Connection status indicator */}
-            <div className={`mb-4 p-2 text-xs rounded-lg text-center ${
+            {/* Connection status indicator - temporarily hidden
+            <div className={`mb-4 p-3 flex items-center justify-center gap-2 rounded-lg ${
               connectionStatus.startsWith("Connected") 
-                ? "bg-green-500/20 border border-green-500/50 text-green-200" 
-                : "bg-yellow-500/20 border border-yellow-500/50 text-yellow-200"
+                ? "bg-green-500/20 border border-green-500/50" 
+                : "bg-yellow-500/20 border border-yellow-500/50"
             }`}>
-              {connectionStatus}
+              <div className={`w-2 h-2 rounded-full animate-pulse ${
+                connectionStatus.startsWith("Connected")
+                  ? "bg-green-500"
+                  : "bg-yellow-500"
+              }`} />
+              <span className={`text-sm font-medium ${
+                connectionStatus.startsWith("Connected")
+                  ? "text-green-700 dark:text-green-300"
+                  : "text-yellow-700 dark:text-yellow-300"
+              }`}>
+                {connectionStatus}
+              </span>
             </div>
+            */}
 
             <div className="bg-black/10 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden border border-gray-300">
               <div className="p-4 sm:p-6 lg:p-8">
@@ -419,6 +431,7 @@ export function GlassmorphicLogin() {
         isVisible={toast.visible}
         onClose={() => setToast({ ...toast, visible: false })}
         duration={6000}
+        showProgress={true}
       />
     </div>
   )
