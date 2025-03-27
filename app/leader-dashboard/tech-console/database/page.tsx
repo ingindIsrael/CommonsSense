@@ -1,11 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Download, Database } from "lucide-react"
+import { Download, Database, RefreshCw } from "lucide-react"
 import Link from "next/link"
+import { ConfirmModal } from "../components/confirm-modal"
 
 export default function DatabaseManagementPage() {
   const [isUpdatingSchema, setIsUpdatingSchema] = useState(false)
+  const [isMigrating, setIsMigrating] = useState(false)
+  const [showMigrateWarning, setShowMigrateWarning] = useState(false)
 
   const handleUpdateSchema = async () => {
     setIsUpdatingSchema(true)
@@ -27,6 +30,27 @@ export default function DatabaseManagementPage() {
       console.error('Failed to update schema:', error)
     } finally {
       setIsUpdatingSchema(false)
+    }
+  }
+
+  const handleMigration = async () => {
+    setIsMigrating(true)
+    try {
+      const response = await fetch('/api/database/migrate', {
+        method: 'POST',
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to run migration')
+      }
+
+      alert('Database migration completed successfully')
+    } catch (error) {
+      console.error('Migration error:', error)
+      alert('Failed to run migration. Check console for details.')
+    } finally {
+      setIsMigrating(false)
+      setShowMigrateWarning(false)
     }
   }
 
@@ -61,6 +85,20 @@ export default function DatabaseManagementPage() {
           </div>
           
           <div className="space-y-4">
+            <button
+              onClick={() => setShowMigrateWarning(true)}
+              disabled={isMigrating}
+              className="w-full"
+            >
+              <div className="p-4 bg-black/30 rounded-lg flex items-center justify-between hover:bg-black/40 transition-colors cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <RefreshCw size={20} className={isMigrating ? 'animate-spin' : ''} />
+                  <span>{isMigrating ? 'Running Migration...' : 'Run Database Migration'}</span>
+                </div>
+                <span className="text-gray-400">→</span>
+              </div>
+            </button>
+            
             <div className="p-4 bg-black/30 rounded-lg">
               <h3 className="font-medium mb-2">Current Schema Status</h3>
               <p className="text-gray-400">View and manage your database schema</p>
@@ -78,6 +116,14 @@ export default function DatabaseManagementPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showMigrateWarning}
+        onClose={() => setShowMigrateWarning(false)}
+        onConfirm={handleMigration}
+        title="Run Database Migration"
+        message="This will create or update database tables. Are you sure you want to continue?"
+      />
     </div>
   )
 } 

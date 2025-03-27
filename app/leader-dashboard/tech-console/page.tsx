@@ -1,6 +1,7 @@
 "use client"
 
-import { Terminal, Database, Code, Server } from "lucide-react"
+import { useState } from "react"
+import { Terminal, Database, Code, Server, BookOpen } from "lucide-react"
 import Link from "next/link"
 
 export default function TechConsolePage() {
@@ -31,6 +32,16 @@ export default function TechConsolePage() {
                 <div className="flex items-center gap-3">
                   <Database size={20} />
                   <span>Database Management</span>
+                </div>
+                <span className="text-gray-400">→</span>
+              </div>
+            </Link>
+            
+            <Link href="/leader-dashboard/tech-console/seed-content">
+              <div className="p-4 bg-black/30 rounded-lg flex items-center justify-between hover:bg-black/40 transition-colors cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <BookOpen size={20} />
+                  <span>Seed Educational Content</span>
                 </div>
                 <span className="text-gray-400">→</span>
               </div>
