@@ -15,7 +15,8 @@ import {
   TrendingUp,
   UserPlus,
   Clock,
-  DollarSign
+  DollarSign,
+  Download
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -93,7 +94,7 @@ const SectionContent = {
   education: () => (
     <div className="space-y-6">
       <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6">
-        <h3 className="text-xl font-bold mb-4">Educational Resources</h3>
+        <h3 className="text-xl font-bold mb-4">Political Education Resources</h3>
         <div className="grid gap-4">
           {['Training Materials', 'Workshops', 'Documents'].map((category) => (
             <div key={category} className="p-4 bg-black/30 rounded-lg">
@@ -331,77 +332,42 @@ function UpcomingEventsCard() {
   )
 }
 
+async function fetchSchema() {
+  const response = await fetch('/api/schema', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch schema')
+  }
+
+  return response.json()
+}
+
 export default function LeaderDashboardPage() {
   const [activeSection, setActiveSection] = useState("overview")
   const router = useRouter()
 
-  const sidebarItems = [
-    { id: "overview", name: "Overview", icon: <Home size={20} /> },
-    { id: "members", name: "Members", icon: <Users size={20} /> },
-    { id: "events", name: "Events", icon: <Calendar size={20} /> },
-    { id: "education", name: "Education", icon: <FileText size={20} /> },
-    { id: "finances", name: "Finances", icon: <Database size={20} /> },
-    { id: "merchandise", name: "Merchandise", icon: <ShoppingBag size={20} /> },
-    { id: "campaigns", name: "Campaigns", icon: <Flag size={20} /> },
-    { id: "analytics", name: "Analytics", icon: <BarChart size={20} /> },
-  ]
-
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
-      {/* Sidebar */}
-      <div className="w-64 bg-black/30 backdrop-blur-xl border-r border-white/10">
-        {/* Logo Section */}
-        <div className="p-4 border-b border-white/10">
-          <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="relative w-10 h-8 overflow-hidden rounded-full">
-              <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-IEXlfwRwFpn2Ej78zjbJNB6Y0QXL9e.png"
-                alt="CommonsSense Logo"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <span className="text-sm font-bold tracking-tight">Leader Dashboard</span>
-          </Link>
+    <div className="flex-1 overflow-auto">
+      {/* Top Bar */}
+      <div className="bg-black/30 backdrop-blur-xl border-b border-white/10 p-4">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
+              ← Back to Main Dashboard
+            </Link>
+          </div>
         </div>
-
-        {/* Navigation Items */}
-        <nav className="p-4 space-y-2">
-          {sidebarItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveSection(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors
-                ${activeSection === item.id 
-                  ? 'bg-white/10 text-white' 
-                  : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
-            >
-              {item.icon}
-              <span>{item.name}</span>
-            </button>
-          ))}
-        </nav>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        {/* Top Bar */}
-        <div className="bg-black/30 backdrop-blur-xl border-b border-white/10 p-4">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-          >
-            <ChevronLeft size={20} />
-            <span>Back to Main Dashboard</span>
-          </button>
-        </div>
-
-        {/* Content Area */}
-        <div className="p-6">
-          <h1 className="text-3xl font-bold mb-6 capitalize">{activeSection}</h1>
-          {SectionContent[activeSection]?.()}
-        </div>
+      {/* Content Area */}
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-6 capitalize">{activeSection}</h1>
+        {SectionContent[activeSection]?.()}
       </div>
     </div>
   )
