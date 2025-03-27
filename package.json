@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export-schema": "ts-node scripts/export-schema.ts"
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.758.0",
